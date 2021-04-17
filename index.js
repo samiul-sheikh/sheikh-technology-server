@@ -10,19 +10,27 @@ const port = process.env.PORT || 8000;
 app.use(cors());
 app.use(bodyParser.json());
 
-console.log(process.env.DB_USER)
-
 app.get('/', (req, res) => {
   res.send('Welcome To SB Technologies Server!')
 })
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2uohe.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     console.log('connection error', err)
-  const collection = client.db("sbTechnologies").collection("services");
-  console.log('database connected successfully!')
+  const serviceCollection = client.db("sbTechnologies").collection("services");
+  
+    // store service information and image to server
+    app.post('/addService', (req, res) => {
+        const newService = req.body;
+        console.log('adding new service: ', newService)
+        serviceCollection.insertOne(newService)
+        .then(result => {
+            console.log('inserted count', result.insertedCount)
+            res.send(result.insertedCount > 0)
+        })
+    })
+
 });
 
 app.listen(port, () => {
