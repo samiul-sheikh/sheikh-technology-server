@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectID;
 const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config()
@@ -40,6 +41,16 @@ client.connect(err => {
             .toArray((err, items) => {
                 res.send(items)
                 // console.log('from database', items)
+            })
+    })
+
+    // display order services from server in serviceOrder
+    app.get('/service/:id', (req, res) => {
+        const id = ObjectID(req.params.id);
+        serviceCollection.find({ _id: id })
+            .toArray((err, service) => {
+                res.send(service[0])
+                // console.log('from database', service[0])
             })
     })
 
