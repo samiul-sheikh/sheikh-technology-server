@@ -21,6 +21,7 @@ client.connect(err => {
 
     const serviceCollection = client.db("sbTechnologies").collection("services");
     const reviewCollection = client.db("sbTechnologies").collection("reviews");
+    const adminCollection = client.db("sbTechnologies").collection("adminPanel");
 
     // store service information and image to server
     app.post('/addService', (req, res) => {
@@ -44,9 +45,9 @@ client.connect(err => {
 
     // store review information and image to server
     app.post('/addReview', (req, res) => {
-        const newService = req.body;
-        console.log('adding new review: ', newService)
-        reviewCollection.insertOne(newService)
+        const newReview = req.body;
+        console.log('adding new review: ', newReview)
+        reviewCollection.insertOne(newReview)
             .then(result => {
                 res.send(result.insertedCount > 0)
             })
@@ -57,6 +58,17 @@ client.connect(err => {
         reviewCollection.find()
             .toArray((err, items) => {
                 res.send(items)
+            })
+    })
+
+    // store admin information to server
+    app.post('/addAdmin', (req, res) => {
+        const newAdmin = req.body;
+        console.log('adding new admin: ', newAdmin)
+        adminCollection.insertOne(newAdmin)
+            .then(result => {
+                // console.log('inserted count', result.insertedCount)
+                res.send(result.insertedCount > 0)
             })
     })
 
