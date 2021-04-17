@@ -18,8 +18,9 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     console.log('connection error', err)
-    
+
     const serviceCollection = client.db("sbTechnologies").collection("services");
+    const reviewCollection = client.db("sbTechnologies").collection("reviews");
 
     // store service information and image to server
     app.post('/addService', (req, res) => {
@@ -38,6 +39,24 @@ client.connect(err => {
             .toArray((err, items) => {
                 res.send(items)
                 // console.log('from database', items)
+            })
+    })
+
+    // store review information and image to server
+    app.post('/addReview', (req, res) => {
+        const newService = req.body;
+        console.log('adding new review: ', newService)
+        reviewCollection.insertOne(newService)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    })
+
+    // display review information in client side
+    app.get('/reviews', (req, res) => {
+        reviewCollection.find()
+            .toArray((err, items) => {
+                res.send(items)
             })
     })
 
