@@ -23,6 +23,7 @@ client.connect(err => {
     const serviceCollection = client.db("sbTechnologies").collection("services");
     const reviewCollection = client.db("sbTechnologies").collection("reviews");
     const adminCollection = client.db("sbTechnologies").collection("adminPanel");
+    const orderCollection = client.db("sbTechnologies").collection("serviceOrder");
 
     // store service information and image to server
     app.post('/addService', (req, res) => {
@@ -51,6 +52,26 @@ client.connect(err => {
             .toArray((err, service) => {
                 res.send(service[0])
                 // console.log('from database', service[0])
+            })
+    })
+
+    // send order services information in server
+    app.post('/addOrder', (req, res) => {
+        const newOrder = req.body;
+        orderCollection.insertOne(newOrder)
+            .then(result => {
+                // console.log(result)
+                res.send(result.insertedCount > 0);
+            })
+        console.log(newOrder);
+    })
+
+    // display ordered services in Orders component for all user
+    app.get('/orders', (req, res) => {
+        // console.log(req.query.email);
+        orderCollection.find()
+            .toArray((err, result) => {
+                res.send(result);
             })
     })
 
